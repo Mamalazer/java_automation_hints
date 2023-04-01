@@ -2,6 +2,7 @@
 			    https://hyperskill.org/join/a0e159e14
 			    https://hyperskill.org/join/5872b82c1
 			    https://hyperskill.org/join/878899354
+			    https://hyperskill.org/join/3fb868e1d
 
 Использование Scanner во время чтения строк и потоков:
 Нажатие Enter не закрывает входной поток. Он все еще открыт и ждет ввода. Чтобы фактически закрыть входной поток, вам нужно создать 
