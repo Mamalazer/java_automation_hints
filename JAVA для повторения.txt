@@ -160,6 +160,8 @@ String offset = ZonedDateTime.now().minusMinutes(5).format(DateTimeFormatter.ISO
 LocalDate.of(1993, 5, 14).format(DateTimeFormatter.ofPattern("dd MMM,yyyy", Locale.ENGLISH));
 	=> 14 May,1993
 
+ZonedDateTime dateTime = ZonedDateTime.now(ZoneOffset.UTC); - часовой пояс +00:00
+
 пакет java.time
 
 класс LocalDate - содержит информацию о дне: год, месяц, день
