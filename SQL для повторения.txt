@@ -254,13 +254,13 @@ select trim(trailing 'q' from 'Zaurqqqqqqqq') from dual;
 select trim(leading '*' from '*****Zaur**') from dual;
 Вывод: Zaur**
 
-select both(leading '*' from '*****Zaur**') from dual;
+select trim(both '*' from '*****Zaur**') from dual;
 Вывод: Zaur
 
-select both(' ' from '     Zaur    ') from dual;
+select trim(' ' from '     Zaur    ') from dual;
 Вывод: Zaur
 
-select both('     Zaur    ') from dual; // по умолчанию удаляет пробелы слева и справа текста
+select trim('     Zaur    ') from dual; // по умолчанию удаляет пробелы слева и справа текста
 Вывод: Zaur
 
 8) INSTR(s, search string, start position, Nth occurrence) , где s - это строка, текст; search string - искомый текст;
@@ -466,6 +466,26 @@ select to_char(sysdate, 'Q') from dual; // возвращает порядков
 
 select to_char(sysdate, 'AM') from dual; // возвращает AM или PM(время до полуночи или после)
 
+select to_char(sysdate, 'HH') from dual; // возвращает час
+
+select to_char(sysdate, 'HH12') from dual; // возвращает час в 12 значном формате
+
+select to_char(sysdate, 'HH24') from dual; // возвращает час в 24 значном формате
+
+select to_char(sysdate, 'MI') from dual; // возвращает минуты
+
+select to_char(sysdate, 'SS') from dual; // возвращает секунды
+
+select to_char(sysdate, 'SSSSS') from dual; // возвращает количество секунд после полуночи
+
+select to_char(sysdate, '"Quarter" Q "of" Year') from dual; // возвращает текст с нужными компонентами даты
+
+select to_char(sysdate, 'DDth "of" Month') from dual; // 20th of September
+
+select to_char(sysdate, 'MmSP Month Yyyysp') from dual; // Nine September Two Thousand Nineteen
+
+select to_char(sysdate, 'hh24SpTh') from dual; // sixteenth
+
 ==========================================================================TO_DATE=====================================================================
 Шаблон:
 TO_DATE(text, format mask, nls_parameters) = D
@@ -524,7 +544,7 @@ select nullif(18, 18) from dual; // null
 
 select nullif(17, 18) from dual; // 17
 
-select country_id, country_name, nvl(nullif(country_id, upper(substr(country_name, 1, 2))), 'Sovpadaet', 'Ne sovpadaet') sravnenie from countries;
+select country_id, country_name, nvl2(nullif(country_id, upper(substr(country_name, 1, 2))), 'Sovpadaet', 'Ne sovpadaet') sravnenie from countries;
 
 4) COALESCE(value1, value2, ... , valueN) возращает первое встреченное значение параметра != null, если таких значений нет, то возвращает null
 все значения параметров должны быть одного типа
