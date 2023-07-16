@@ -1808,6 +1808,9 @@ DROP COLUMN column_name;
 ALTER TABLE table_name
 RENAME COLUMN column_name1 to column_name2;
 
+ALTER TABLE table_name
+RENAME TO new_table_name;
+
 ALTER TABLE table_name READ ONLY; // таблицу нельзя изменить, только просмотреть с помощью select и удалить с помощью DROP TABLE
 
 ALTER TABLE table_name
