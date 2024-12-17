@@ -1296,6 +1296,15 @@ group by city);
 select * from employees where manager_id in 
 (select distinct e1.employee_id from employees e1 join employees e2 on e2.manager_id = e1.employee_id where e1.salary > 15000);
 
+другой вариант
+
+select * from employees where manager_id in 
+(select employee_id from employees
+where employee_id in 
+(select distinct manager_id from employees 
+where manager_id is not null)
+and salary > 15000);
+
 select * from departments where department_id in 
 (select d.department_id from employees e right join departments d on e.department_id = d.department_id where first_name is null);
 
