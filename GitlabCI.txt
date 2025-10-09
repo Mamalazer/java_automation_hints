@@ -1,0 +1,158 @@
+Пример пайплайна:
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DEPLOY_ENV: staging
+  PROJECT_NAME: "demo-app"
+
+build_job:
+  stage: build
+  script:
+    - echo "Собираем проект $PROJECT_NAME..."
+    - mkdir dist
+    - echo "hello world" > dist/app.txt
+  artifacts: // Создаём артифакт, который будет доступен другим джобам
+    paths:
+      - dist/
+
+test_job_1:
+  stage: test
+  script:
+    - echo "Запускаем unit-тесты..."
+    - cat dist/app.txt | grep "hello"
+
+test_job_2:
+  stage: test
+  script:
+    - echo "Проверяем структуру проекта..."
+    - test -f dist/app.txt && echo "Файл найден"
+  when: manual
+  allow_failure: true
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploying to $DEPLOY_ENV..."
+  environment:
+    name: $DEPLOY_ENV
+    url: https://staging.example.com
+    auto_stop_in: 1 day
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "staging"'
+      when: always
+
+deploy_prod:
+  stage: deploy
+  script:
+    - echo "Deploying to production..."
+  environment:
+    name: production
+    url: ${PROD_ENV_URL}
+  when: manual
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+
+deploy_mr_preview:
+  stage: deploy
+  script:
+    - echo "Deploying MR Preview for $CI_COMMIT_REF_NAME"
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://review-$CI_COMMIT_REF_NAME.example.com
+    auto_stop_in: 1 day
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+
+
+================================================================================================================================================================================
+
+Предопределённые переменные:
+
+- CI_COMMIT_BRANCH (имя текущей ветки)
+- CI_COMMIT_TAG (имя тега, если пайплан запущен по тегу)
+- CI_PIPELINE_ID (ID пайплана)
+- CI_JOB_STAGE (Stage, в котором выполняется job)
+- CI_PROJECT_DIR (Абсолютный путь до проекта на раннере)
+- CI_COMMIT_SHORT_SHA (Первые 8 символов SHA)
+
+================================================================================================================================================================================
+
+Пользовательские переменные:
+
+- Задание в .gitlab-ci.yml (глобально или в jobe)
+
+variables:
+  DEPLOY_ENV: staging
+  PROJECT_NAME: "demo-app"
+
+- через UI проекта: Settings -> CI/CD -> Variables
+
+================================================================================================================================================================================
+
+Приоритет переменных по убыванию
+
+1) Запуск пайплайна с параметрами
+2) UI переменные
+3) .gitlab-ci.yml -> Variables
+4) Переменные CI_ (предопределённые)
+
+===============================================================================================================================================================================
+
+Использование переменных в скриптах:
+
+Пример использования (можно в script, before_script, after_script)
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploying to $DEPLOY_ENV..."
+
+===============================================================================================================================================================================
+
+Добавление окружения в job
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploying to $DEPLOY-ENV..."
+  environment:
+    name: $DEPLOY_ENV
+    url: https://....
+    auto_stop_in: 1 day
+
+===============================================================================================================================================================================
+
+auto stop и stop actions
+
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://rview-$CI_COMMIT_REF_NAME.example.com
+    auto_stop_in: 1 day
+    action: stop
+
+===============================================================================================================================================================================
+
+rules
+
+rules:
+  - if: '$CI_COMMIT_BRANCH == "main"'
+    when: always
+
+rules:
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    when: always
+
+rules:
+  - changes:
+      - backend/**/*  ** - любой уровень вложенности
+
+rules:
+  - exists:
+      - .env.production
+    when: manual
